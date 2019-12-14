@@ -45,64 +45,50 @@ public class MainActivity extends AppCompatActivity {
         final TextView textView = findViewById(R.id.textView);
 
 
-button.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        AsyncTask.execute(new Runnable() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
+            public void onClick(View v) {
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            URL url = null;
 
-                URL url = null;
-                try {
-                    url = new URL("http://10.0.2.2:8080/getwaitressbyid?id=1");
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                HttpURLConnection myConnection = null;
-                try {
-                    myConnection = (HttpURLConnection) url.openConnection();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    if (myConnection.getResponseCode()== 200){
-                        InputStream responseBody = myConnection.getInputStream();
-                        InputStreamReader reader = new InputStreamReader(responseBody, "UTF-8");
-                        JsonReader jsonReader = new JsonReader(reader);
+                            url = new URL("http://10.0.2.2:8080/getwaitressbyid?id=1");
 
-                        jsonReader.beginObject();
-                        String username = null;
+                            HttpURLConnection myConnection = null;
+                            myConnection = (HttpURLConnection) url.openConnection();
 
-                        while (jsonReader.hasNext()){
-                            String json = jsonReader.nextName();
 
-                            if (json.equals("username")){
-                                username = jsonReader.nextString();
-                            }else {
-                                jsonReader.skipValue();
+                            if (myConnection.getResponseCode() == 200) {
+                                InputStream responseBody = myConnection.getInputStream();
+                                InputStreamReader reader = new InputStreamReader(responseBody, "UTF-8");
+                                JsonReader jsonReader = new JsonReader(reader);
+
+                                jsonReader.beginObject();
+                                String username = null;
+
+                                while (jsonReader.hasNext()) {
+                                    String json = jsonReader.nextName();
+
+                                    if (json.equals("username")) {
+                                        username = jsonReader.nextString();
+                                    } else {
+                                        jsonReader.skipValue();
+                                    }
+                                }
+                                textView.setText(username);
+                                jsonReader.close();
+                                myConnection.disconnect();
                             }
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        textView.setText(username);
-                        jsonReader.close();
-                        myConnection.disconnect();
-
-
-
-
-
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                });
 
             }
         });
-
-
-
-    }
-});
 
     }
 
